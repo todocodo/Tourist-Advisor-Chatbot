@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import pickle
 import numpy as np
 import pandas as pd
+import random
 from tensorflow.python.keras.models import load_model
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 # import tensorflow as tf
@@ -10,6 +11,17 @@ from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 app = Flask(__name__)
 
 history = []
+
+# All pre-defined responeses 
+GREETING_RESPONSES = ["hi", "hey", "hi there", "hello", "What's up", "Hola hola"]
+
+GOODBYE_RESPONSES = ["bye", "Goodbye", "See ya", "It was lovely chatting with you! Bye.", "Bye, till next time!"]
+
+TRAVEL_SUGGESTION_RESPONSES = ["Where would you like to go - a lovely restaurant or a nice bar maybe", "I know a lot of restaurants and bars, tell me what you want to do?"]
+
+APOLOGISE_RESPONSES = ["Sorry, can you repeat, please", "Say it again", "Bro, I can't understand you", "Sorry, I didn't get that"]
+
+YOU_ARE_WELCOME_RESPONSES = ["You are very welcome", "Happy to help", "No problem", "No worries", "That's my job", "You're welcome"]
 
 # Create a class for the bot
 class TouristBotClassifier:
@@ -35,46 +47,45 @@ classes = pickle.load(open('model/classes_final.pkl','rb'))
 tokenizer = pickle.load(open('model/tokenizer_final.pkl','rb'))
 label_encoder = pickle.load(open('model/label_encoder_final.pkl','rb'))
 
-# Create a route decorator 
-@app.route('/') 
+# Create a route decorator which also handles the main method for the chatbot
+
+@app.route('/', methods=["GET","POST"]) 
 
 def index(): 
-
-  return render_template("index.html")
-
-# Create a predict page
-@app.route('/chatbot') 
-
-def predict(): 
-    return render_template("chatbot.html")
-
-# In this method the text from the form needs to be preprocessed 
-# It should be done the same way as in the notebooks that we made 
-
-@app.route('/chatbot', methods=["POST"]) 
-
-# def results(): 
-#     textInput = request.form.get("textInput")
-
-#     kerasas = tokenizer.texts_to_sequences(textInput)
-#     keras_sequence = pad_sequences(kerasas, maxlen=16, padding="post")
-#     predictions = model.predict(keras_sequence)
- 
-#     pred_results = label_encoder.inverse_transform(np.argmax(predictions, 1))[0]
-
-#     history.append("User: {} ---> BOT_Intent: {}".format(textInput, pred_results))
-
-#     return render_template("chatbot.html", history=history)
-
-
-def results(): 
-
-  bot = TouristBotClassifier(classes,model,tokenizer,label_encoder)
-
   textInput = request.form.get("textInput")
 
-  pred_results = bot.get_intent(textInput)
+  if textInput:
 
-  history.append("User: {} ---> BOT_Intent: {}".format(textInput, pred_results))
+    bot = TouristBotClassifier(classes,model,tokenizer,label_encoder)  
+    pred_results = bot.get_intent(textInput)
 
-  return render_template("chatbot.html", history=history)
+    global history 
+    history = dialogue_management(history, pred_results, textInput)
+  
+  if textInput == "clear":
+    history = []
+
+  return render_template("index.html", history=history)
+
+
+def dialogue_management(history, pred_results, textInput):
+  if pred_results == "greeting":
+    history.append([textInput, random.choice(GREETING_RESPONSES)])
+  elif pred_results =="goodbye":
+    history.append([textInput, random.choice(GOODBYE_RESPONSES)])
+  elif pred_results == "travel_suggestion":
+    history.append([textInput, random.choice(TRAVEL_SUGGESTION_RESPONSES)])
+  elif pred_results == "restaurant_suggestion":
+    history.append([textInput, "Go Five Guys, it is the best place to eat some burgers!"])
+  elif pred_results == "bar_suggestion":
+    history.append([textInput, "Try Pop World, the music is great and also the cocktails"])
+  elif pred_results == "thank_you":
+    history.append([textInput, random.choice(YOU_ARE_WELCOME_RESPONSES)])
+  elif pred_results == "oss":
+    history.append([textInput, "I am not answering to that!"])
+  elif pred_results == "weather":
+    history.append([textInput, "I only know the weather in Burundi. It's around 36 degrees"])
+  else:
+    history.append([textInput, random.choice(APOLOGISE_RESPONSES)])
+  return history
+
