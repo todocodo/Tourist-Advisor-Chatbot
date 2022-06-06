@@ -11,6 +11,21 @@ app = Flask(__name__)
 
 history = []
 
+# Create a class for the bot
+class TouristBotClassifier:
+    def __init__(self,classes,model,tokenizer,label_encoder):
+        self.classes = classes
+        self.classifier = model
+        self.tokenizer = tokenizer
+        self.label_encoder = label_encoder
+
+    def get_intent(self,text):
+        self.text = [text]
+        self.test_keras = self.tokenizer.texts_to_sequences(self.text)
+        self.test_keras_sequence = pad_sequences(self.test_keras, maxlen=16, padding='post')
+        self.pred = self.classifier.predict(self.test_keras_sequence)
+        return label_encoder.inverse_transform(np.argmax(self.pred,1))[0]
+
 # Load the model & utilies - make sure the libraries installed are the same version
 # as the ones used for training the model 
 
@@ -38,15 +53,28 @@ def predict():
 
 @app.route('/chatbot', methods=["POST"]) 
 
-def results(): 
-    textInput = request.form.get("textInput")
+# def results(): 
+#     textInput = request.form.get("textInput")
 
-    kerasas = tokenizer.texts_to_sequences(textInput)
-    keras_sequence = pad_sequences(kerasas, maxlen=16, padding="post")
-    predictions = model.predict(keras_sequence)
+#     kerasas = tokenizer.texts_to_sequences(textInput)
+#     keras_sequence = pad_sequences(kerasas, maxlen=16, padding="post")
+#     predictions = model.predict(keras_sequence)
  
-    pred_results = label_encoder.inverse_transform(np.argmax(predictions, 1))[0]
+#     pred_results = label_encoder.inverse_transform(np.argmax(predictions, 1))[0]
 
-    history.append("User: {} ---> BOT_Intent: {}".format(textInput, pred_results))
+#     history.append("User: {} ---> BOT_Intent: {}".format(textInput, pred_results))
 
-    return render_template("chatbot.html", history=history)
+#     return render_template("chatbot.html", history=history)
+
+
+def results(): 
+
+  bot = TouristBotClassifier(classes,model,tokenizer,label_encoder)
+
+  textInput = request.form.get("textInput")
+
+  pred_results = bot.get_intent(textInput)
+
+  history.append("User: {} ---> BOT_Intent: {}".format(textInput, pred_results))
+
+  return render_template("chatbot.html", history=history)

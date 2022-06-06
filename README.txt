@@ -2,6 +2,7 @@
 	- try using git-bash and not other terminal as I tried with the default "cmd" for windows but certain commands didn't work for some reason
 
 2. Usually for new flask app a virtual environment needs to be created, however in this case I already created one, so proceed to the next step
+	if a virtual environment is not set up run - python -m venv virt
 
 3. run "source virt/Scripts/activate" to activate the virtual environmnet --> it should display "(virt)" after each command in the git-bash
 
@@ -30,3 +31,10 @@ only the main.py is needed
 3. make sure the versions of the libraries in flask are the same as the ones you used to train your model
 4. In the results() method add your logic for prediction, (preprocessing the text, or whatever you have), use my code for reference
 5. Use the same method to display some results in the templates
+
+GIT INSTRUCTIONS:
+
+if it is already set up
+1. git add .
+2. git commit -am 'First Commit'
+3. git push 
