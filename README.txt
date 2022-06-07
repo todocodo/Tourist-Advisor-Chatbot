@@ -1,3 +1,7 @@
+TO SEE THE CHATBOT
+Visit -> https://tachatbot.herokuapp.com/
+
+TO OPEN THE CHATBOT IN LOCAL MACHINE:
 1. Open the git-bash terminal (this terminal is automatically installed after the installation of git)
 	- try using git-bash and not other terminal as I tried with the default "cmd" for windows but certain commands didn't work for some reason
 
