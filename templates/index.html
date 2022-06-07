@@ -7,6 +7,12 @@
     <title>Chatbot Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+    <style>
+        ul, li {
+            font-size: 3mm;
+        }
+    </style>
 </head>
 
 <body>
@@ -14,25 +20,40 @@
         <div class="text-center">
             <h1 class="my-5">Tourist Advisor Chatbot</h1>
 
-            <p class="success">This chatbot that can hold a basic conversation with a person and recommends restaurants,
-                pubs, and landmarks in any country that is asked about</p>
-
-            <form action="/" method="POST">
-                <div class="mb-3">
-                    <label for="textInput" class="form-label"></label>
-                    <input type="text" class="form-control" id="textInput" aria-describedby="textHelp"
-                        placeholder="Chat with me..." name="textInput" autocomplete="off">
-                </div>
-                <div class="d-flex-center">
-                    <button type="submit" class="btn btn-success">Send</button>
-                    <button id="clear_button" class="btn btn-success">Clear</button>
-                </div>
-            </form>
-
-            <br>
-            <br>
-            <!-- Display the dialoge -->
+            <p>This chatbot can hold a basic conversation with a person and recommend restaurants and pubs, 
+                and also give information about the weather. It does work with a database, so the chatbot is not able to remember what you said previously.
+            </p>
         </div>
+        <div>
+            <b>The chatbot recognises the following intents:</b>
+            <ul>
+                <li>Greetings</li>
+                <li>Goodbye</li>
+                <li>Thank you</li>
+                <li>Bar suggestion</li>
+                <li>Restaurant suggestion</li>
+                <li>Weather</li>
+                <li>Out of Scope</li>
+            </ul>
+            <i>If you ask for something that is not part of that list, the bot will ask for clarification.</i>
+        </div>
+
+        <form action="/" method="POST" class="text-center">
+            <div class="mb-3">
+                <label for="textInput" class="form-label"></label>
+                <input type="text" class="form-control" id="textInput" aria-describedby="textHelp"
+                    placeholder="Chat with me..." name="textInput" autocomplete="off">
+            </div>
+            <div class="d-flex-center">
+                <button type="submit" class="btn btn-success">Send</button>
+                <button id="clear_button" class="btn btn-success">Clear</button>
+            </div>
+        </form>
+
+        <br>
+        <br>
+        <!-- Display the dialoge -->
+
         <div>
             {% for sentence in history %}
             <p>User: {{ sentence[0] }}</p>
@@ -62,7 +83,7 @@
     <script>
         document.getElementById("clear_button").addEventListener("click", clear);
 
-        function clear(){
+        function clear() {
             document.getElementById("textInput").value = "clear";
         }
     </script>
